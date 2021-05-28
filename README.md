@@ -1,6 +1,5 @@
 # Gesture Recognition with SensiML
-<img src="assets/gestures-with-terminal.gif" alt="Deployed gesture recognizer" width="320">
-<em>Deployed gesture recognizer</em>
+![Deployed gesture recognizer](assets/gestures-with-terminal.gif)
 
 ## Overview
 This repository is a companion to the [Gesture Recognition with SensiML
@@ -27,10 +26,7 @@ The dataset used for this project can be downloaded from the [releases page](../
 
 The gestures dataset was collected by Microchip employees and consists of two test subjects performing the continuous gestures as described in the section above with a [SAMD21 BMI160 evaluation board](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A). Participants were directed to perform the gestures in a natural way, using a thumb and index finger grip around the SAMD21 board as shown in the image below, with the top of the board facing away from them, and the USB connector oriented towards the ground.
 
-<p>
-<img src="assets/thumb-forefinger-grip.jpg" alt="Thumb and index finger grip" width="320">
-<em>Thumb and index finger grip</em>
-</p>
+![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg)
 
 In addition to the target gestures, some additional gestures - *triangle*, *forward wheel*, the letter *V*, and others - were collected to make up the *unknown* gestures class, which is used to help improve and validate the models discriminatory ability.
 
@@ -45,7 +41,7 @@ Sensor configuration values used in the data collection are summarized in the ta
 | --- | --- | --- | --- | --- |
 | Bosch [BMI160](https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi160/) | Ax, Ay, Az, Gx, Gy, Gz | 100Hz | 16G | 2000DPS |
 
-## Benchmarks
+## Firmware Benchmark
 Measured with the BMI160 sensor configuration, ``-O2`` level compiler optimizations, and 48MHz clock
 - 39.4kB Flash
 - 5.6kB RAM
@@ -53,7 +49,5 @@ Measured with the BMI160 sensor configuration, ``-O2`` level compiler optimizati
 
 ## Classifier Performance
 Below is the confusion matrix for the test dataset. Note that the classes are highly imbalanced so accuracy is not a good indicator of overall performance.
-<p>
-<img src="assets/confusion-matrix.png" alt="Test set confusion matrix" width="640">
-<em>Test set confusion matrix</em>
-</p>
+
+![Test set confusion matrix](assets/confusion-matrix.png)
