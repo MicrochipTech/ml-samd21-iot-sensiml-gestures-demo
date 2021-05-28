@@ -1,5 +1,7 @@
 # Gesture Recognition with SensiML
-![Deployed gesture recognizer](assets/gestures-with-terminal.gif)
+| ![Deployed gesture recognizer](assets/gestures-with-terminal.gif) |
+| :--: |
+| Deployed gesture recognizer |
 
 ## Overview
 This repository is a companion to the [Gesture Recognition with SensiML
@@ -26,7 +28,9 @@ The dataset used for this project can be downloaded from the [releases page](../
 
 The gestures dataset was collected by Microchip employees and consists of two test subjects performing the continuous gestures as described in the section above with a [SAMD21 BMI160 evaluation board](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A). Participants were directed to perform the gestures in a natural way, using a thumb and index finger grip around the SAMD21 board as shown in the image below, with the top of the board facing away from them, and the USB connector oriented towards the ground.
 
-![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg)
+| ![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg) |
+| :--: |
+| Thumb and index finger grip |
 
 In addition to the target gestures, some additional gestures - *triangle*, *forward wheel*, the letter *V*, and others - were collected to make up the *unknown* gestures class, which is used to help improve and validate the models discriminatory ability.
 
