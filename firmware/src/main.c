@@ -191,9 +191,9 @@ int main ( void )
             // Light the LEDs to indicate overflow
             tickrate = 0;
             LED_ALL_Off();
-            LED_YELLOW_On();  // Indicate OVERFLOW
+            LED_YELLOW_On(); LED_RED_On();  // Indicate OVERFLOW
             sleep_ms(5000U);
-            LED_YELLOW_Off(); // Clear OVERFLOW
+            LED_ALL_Off(); // Clear OVERFLOW
             
             buffer_reset(&snsr_buffer);
 #if SENSIML_BUILD
