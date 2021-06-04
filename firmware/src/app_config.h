@@ -47,12 +47,16 @@
 
 // IMU sampling rate in units of SNSR_SAMPLE_RATE_UNIT
 // For BMI160:
-//  Use one of 25, 50, 100, 200, 400, 800, or 1600 (SNSR_SAMPLE_RATE_UNIT_HZ)
-// For ICM42688:
-//  Use one of 25, 50, 100, 200, or 500 (SNSR_SAMPLE_RATE_UNIT_HZ)
-//  OR: 1, 2, 4, 8, 16 (SNSR_SAMPLE_RATE_UNIT_KHZ)
-// !NB! Increasing the sample rate above 200Hz with all 6 axes may cause buffer overruns
-// Change at your own risk!
+//  - set SNSR_SAMPLE_RATE_UNIT to SNSR_SAMPLE_RATE_UNIT_HZ
+//  - set SNSR_SAMPLE_RATE to one of: 25, 50, 100, 200, 400, 800, or 1600
+// For ICM42688 < 1kHz range:
+//  - set SNSR_SAMPLE_RATE_UNIT to SNSR_SAMPLE_RATE_UNIT_HZ 
+//  - set SNSR_SAMPLE_RATE to one of: 25, 50, 100, 200, or 500
+// For ICM42688 >= 1kHz range:
+//  - set SNSR_SAMPLE_RATE_UNIT to SNSR_SAMPLE_RATE_UNIT_KHZ
+//  - set SNSR_SAMPLE_RATE to one of: 1, 2, 4, 8, or 16
+// !NB! Increasing the sample rate above 200Hz with all 6 axes when using one 
+// of the data logging builds may cause buffer overruns - Change at your own risk!
 #define SNSR_SAMPLE_RATE        100
 #define SNSR_SAMPLE_RATE_UNIT   SNSR_SAMPLE_RATE_UNIT_HZ // HZ or KHZ
 

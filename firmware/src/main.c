@@ -187,6 +187,12 @@ int main ( void )
     
     int clsid = 0;
     uint32_t runtime = 0;
+    
+#if !SENSIML_BUILD                
+    (void) clsid;
+    (void) runtime;
+#endif
+    
     while (1)
     {
         /* Maintain state machines of all polled MPLAB Harmony modules. */
@@ -223,15 +229,15 @@ int main ( void )
                 
                 SERCOM5_USART_Write(&headerbyte, 1);
                 
-                SERCOM5_USART_Write(&temp_buffer[tempIdx][0], SNSR_NUM_AXES*sizeof(buffer_data_t));
+                SERCOM5_USART_Write(ptr, SNSR_NUM_AXES*sizeof(buffer_data_t));
                 
                 headerbyte = ~headerbyte;
                 SERCOM5_USART_Write(&headerbyte, 1);
                 headerbyte = ~headerbyte;
 #elif DATA_LOGGER_BUILD
-                printf("%d", temp_buffer[tempIdx][0]);
+                printf("%d", ptr[0]);
                 for (int j=1; j < SNSR_NUM_AXES; j++) {
-                    printf(" %d", temp_buffer[tempIdx][j]);
+                    printf(" %d", ptr[j]);
                 }
                 printf("\r\n");
 #elif SENSIML_BUILD
@@ -265,7 +271,7 @@ int main ( void )
         }
         
     }
-    
+        
     tickrate = 0;
     LED_GREEN_Off();
     LED_RED_On();
