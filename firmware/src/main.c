@@ -159,7 +159,18 @@ int main ( void )
             break;
         }
         
-        printf("sensor sample rate set at %dHz\r\n", SNSR_SAMPLE_RATE);
+        printf("sensor type is %s\r\n", SNSR_NAME);
+        printf("sensor sample rate set at %d%s\r\n", SNSR_SAMPLE_RATE, SNSR_SAMPLE_RATE_UNIT_STR);
+#if SNSR_USE_ACCEL
+        printf("accelerometer axes %s%s%s enabled with range set at +/-%dGs\r\n", SNSR_USE_ACCEL_X ? "x" : "", SNSR_USE_ACCEL_Y ? "y" : "", SNSR_USE_ACCEL_Z ? "z" : "", SNSR_ACCEL_RANGE);
+#else
+        printf("accelerometer disabled\r\n");
+#endif
+#if SNSR_USE_GYRO
+        printf("gyrometer axes %s%s%s enabled with range set at %dDPS\r\n", SNSR_USE_GYRO_X ? "x" : "", SNSR_USE_GYRO_Y ? "y" : "", SNSR_USE_GYRO_Z ? "z" : "", SNSR_GYRO_RANGE);
+#else
+        printf("gyrometer disabled\r\n");
+#endif
         
 #if SENSIML_BUILD
         /* Initialize SensiML Knowledge Pack */

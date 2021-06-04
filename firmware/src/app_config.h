@@ -45,14 +45,16 @@
 
 #define MPDV_START_OF_FRAME     0xA5U   // Frame header byte for MPLAB DV
 
-// IMU sampling rate in Hz
+// IMU sampling rate in units of SNSR_SAMPLE_RATE_UNIT
 // For BMI160:
-//  Use one of 25, 50, 100, 200, 400, 800, or 1600
+//  Use one of 25, 50, 100, 200, 400, 800, or 1600 (SNSR_SAMPLE_RATE_UNIT_HZ)
 // For ICM42688:
-//  Use one of 25, 50, 100, 200, 500
+//  Use one of 25, 50, 100, 200, or 500 (SNSR_SAMPLE_RATE_UNIT_HZ)
+//  OR: 1, 2, 4, 8, 16 (SNSR_SAMPLE_RATE_UNIT_KHZ)
 // !NB! Increasing the sample rate above 200Hz with all 6 axes may cause buffer overruns
 // Change at your own risk!
 #define SNSR_SAMPLE_RATE        100
+#define SNSR_SAMPLE_RATE_UNIT   SNSR_SAMPLE_RATE_UNIT_HZ // HZ or KHZ
 
 // Accelerometer range in Gs
 #define SNSR_ACCEL_RANGE        16
@@ -69,9 +71,9 @@
 #define SNSR_USE_ACCEL_X        true
 #define SNSR_USE_ACCEL_Y        true
 #define SNSR_USE_ACCEL_Z        true
-#define SNSR_USE_GYRO_X         true
-#define SNSR_USE_GYRO_Y         true
-#define SNSR_USE_GYRO_Z         true
+#define SNSR_USE_GYRO_X         false
+#define SNSR_USE_GYRO_Y         false
+#define SNSR_USE_GYRO_Z         false
 
 // LED tick rate parameters
 #define TICK_RATE_FAST          100
@@ -123,6 +125,13 @@
 #define LED_ALL_On()      do { LED_YELLOW_On(); LED_GREEN_On(); LED_RED_On(); LED_BLUE_On(); } while (0)
 #define LED_ALL_Off()     do { LED_YELLOW_Off(); LED_GREEN_Off(); LED_RED_Off(); LED_BLUE_Off(); } while (0)
 #define MIKRO_EIC_PIN   EIC_PIN_12
+
+#define SNSR_SAMPLE_RATE_UNIT_STR ((SNSR_SAMPLE_RATE_UNIT == SNSR_SAMPLE_RATE_UNIT_KHZ) ? "kHz" : "Hz")
+#ifdef SNSR_TYPE_BMI160
+#define SNSR_NAME "bmi160"
+#elif SNSR_TYPE_ICM42688
+#define SNSR_NAME "icm42688"
+#endif
 
 #ifdef	__cplusplus
 extern "C" {
