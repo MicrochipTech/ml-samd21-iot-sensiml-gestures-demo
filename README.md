@@ -22,15 +22,57 @@ The supported gestures (shown in the video above) are:
 
 In addition there is also an 'unknown' class for gesture-like movement and an 'idle' class for low motion activity.
 
+## Performing Gestures
+Gestures should be performed in a way that feels natural, using a thumb and index finger grip around the SAMD21 board as shown in the image below. The top of the board should be facing away from the user, with the USB connector oriented towards the ground.
+
+| ![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg) |
+| :--: |
+| Thumb and index finger grip |
+
+The supported gestures are listed below (described from user's point of view):
+
+- Figure Eight - Move the board in a figure eight pattern, starting the gesture from the top of the eight and going left (counterclockwise) at a slow to moderate speed
+- Up-down - Move board up and down continuously at a moderate speed
+- Wave - Wave the board side to side at a moderate speed as if you were greeting someone
+- Wheel - Move the board in a clockwise circle (or wheel) continuously, at a moderate speed
+
+Also see the GIF at the top of this document for further reference.
+
+## Firmware Operation
+The firmware can be thought of as running in one of five states as reflected by the onboard LEDs and described in the table below:
+
+| State |	LED Behavior |	Description |
+| --- | --- | --- |
+| Error |	Red (ERROR) LED lit |	Fatal error. (Do you have the correct sensor plugged in?). |
+| Buffer Overflow |	Yellow (DATA) and Red (ERROR) LED lit for 5 seconds	| Processing is not able to keep up with real-time; data buffer has been reset. |
+| Idle | Yellow (DATA) LED lit |	Board is in idle state. |
+| Unknown Gesture |	No LEDs lit	| Gesture-like motion detected, but not a known gesture. |
+| Recognized Gesture | Single LED flashing according to gesture class |	One of the known gestures has been detected. |
+
+When a gesture is recognized by the firmware, one of the onboard LEDs will begin flashing quickly according to the gesture class; this mapping is shown in the image below.
+
+| ![Gesture class to LED mapping](assets/led-labels.png) |
+| :--: |
+| Gesture class to LED mapping |
+
+In addition, the firmware also prints the classification output for each inference over the UART port. To read the UART port use a terminal emulator of your choice (e.g., MPLAB Data Visualizer's integrated terminal tool) with the following settings:
+
+- Baudrate 115200
+- Data bits 8
+- Stop bits 1
+- Parity None
+
+A sample of the terminal output is shown in the figure below.
+
+| ![Terminal output](assets/terminal-output.png) |
+| :--: |
+| UART Terminal Output |
+
 ## Continuous Gestures Dataset
 
 The dataset used for this project can be downloaded from the [releases page](../../releases) - it includes a collection of 10 second long samples in CSV format (ax,ay,az,gx,gy,gz format) split into training and test folds. A [DCLI](https://sensiml.com/documentation/data-capture-lab/importing-external-sensor-data.html#dcli-format-and-pre-labeled-data) descriptor file is also included for each fold for easy import into SensiML's [Data Capture Lab](https://sensiml.com/documentation/data-capture-lab/index.html).
 
 The gestures dataset was collected by Microchip employees and consists of two test subjects performing the continuous gestures as described in the section above with a [SAMD21 BMI160 evaluation board](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A). Participants were directed to perform the gestures in a natural way, using a thumb and index finger grip around the SAMD21 board as shown in the image below, with the top of the board facing away from them, and the USB connector oriented towards the ground.
-
-| ![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg) |
-| :--: |
-| Thumb and index finger grip |
 
 In addition to the target gestures, some additional gestures - *triangle*, *forward wheel*, the letter *V*, and others - were collected to make up the *unknown* gestures class, which is used to help improve and validate the models discriminatory ability.
 
