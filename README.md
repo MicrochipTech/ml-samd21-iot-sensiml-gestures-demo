@@ -1,3 +1,4 @@
+![https://www.microchip.com/](assets/microchip.png)
 # Gesture Recognition with SensiML
 | ![Deployed gesture recognizer](assets/gestures-with-terminal.gif) |
 | :--: |
