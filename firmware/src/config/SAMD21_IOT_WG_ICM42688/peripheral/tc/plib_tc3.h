@@ -1,24 +1,26 @@
 /*******************************************************************************
-  SERCOM Universal Synchronous/Asynchrnous Receiver/Transmitter PLIB
+  Timer/Counter(TC3) PLIB
 
   Company
     Microchip Technology Inc.
 
   File Name
-    plib_sercom5_usart.h
+    plib_tc3.h
 
   Summary
-    USART peripheral library interface.
+    TC3 PLIB Header File.
 
   Description
-    This file defines the interface to the USART peripheral library. This
+    This file defines the interface to the TC peripheral library. This
     library provides access to and control of the associated peripheral
     instance.
 
   Remarks:
     None.
+
 *******************************************************************************/
 
+// DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
@@ -41,20 +43,24 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
+// DOM-IGNORE-END
 
-#ifndef PLIB_SERCOM5_USART_H // Guards against multiple inclusion
-#define PLIB_SERCOM5_USART_H
+#ifndef PLIB_TC3_H      // Guards against multiple inclusion
+#define PLIB_TC3_H
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
+/* This section lists the other files that are included in this file.
+*/
 
-#include "plib_sercom_usart_common.h"
+#include "device.h"
+#include "plib_tc_common.h"
 
 // DOM-IGNORE-BEGIN
-#ifdef __cplusplus // Provide C++ Compatibility
+#ifdef __cplusplus // Provide C Compatibility
 
     extern "C" {
 
@@ -63,47 +69,49 @@
 
 // *****************************************************************************
 // *****************************************************************************
+// Section: Data Types
+// *****************************************************************************
+// *****************************************************************************
+/* The following data type definitions are used by the functions in this
+    interface and should be considered part it.
+*/
+
+// *****************************************************************************
+// *****************************************************************************
 // Section: Interface Routines
 // *****************************************************************************
 // *****************************************************************************
+/* The following functions make up the methods (set of possible operations) of
+   this interface.
+*/
 
-void SERCOM5_USART_Initialize( void );
+// *****************************************************************************
 
-bool SERCOM5_USART_SerialSetup( USART_SERIAL_SETUP * serialSetup, uint32_t clkFrequency );
+void TC3_TimerInitialize( void );
 
-USART_ERROR SERCOM5_USART_ErrorGet( void );
+void TC3_TimerStart( void );
 
-uint32_t SERCOM5_USART_FrequencyGet( void );
+void TC3_TimerStop( void );
 
-size_t SERCOM5_USART_Write(uint8_t* pWrBuffer, const size_t size );
-
-size_t SERCOM5_USART_WriteCountGet(void);
-
-size_t SERCOM5_USART_WriteFreeBufferCountGet(void);
-
-size_t SERCOM5_USART_WriteBufferSizeGet(void);
-
-bool SERCOM5_USART_WriteNotificationEnable(bool isEnabled, bool isPersistent);
-
-void SERCOM5_USART_WriteThresholdSet(uint32_t nBytesThreshold);
-
-void SERCOM5_USART_WriteCallbackRegister( SERCOM_USART_RING_BUFFER_CALLBACK callback, uintptr_t context);
+uint32_t TC3_TimerFrequencyGet( void );
 
 
+void TC3_Timer16bitPeriodSet( uint16_t period );
 
-size_t SERCOM5_USART_Read(uint8_t* pRdBuffer, const size_t size);
+uint16_t TC3_Timer16bitPeriodGet( void );
 
-size_t SERCOM5_USART_ReadCountGet(void);
+uint16_t TC3_Timer16bitCounterGet( void );
 
-size_t SERCOM5_USART_ReadFreeBufferCountGet(void);
+void TC3_Timer16bitCounterSet( uint16_t count );
 
-size_t SERCOM5_USART_ReadBufferSizeGet(void);
 
-bool SERCOM5_USART_ReadNotificationEnable(bool isEnabled, bool isPersistent);
 
-void SERCOM5_USART_ReadThresholdSet(uint32_t nBytesThreshold);
 
-void SERCOM5_USART_ReadCallbackRegister( SERCOM_USART_RING_BUFFER_CALLBACK callback, uintptr_t context);
+void TC3_TimerCallbackRegister( TC_TIMER_CALLBACK callback, uintptr_t context );
+
+
+void TC3_TimerCommandSet(TC_COMMAND command);
+
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -113,4 +121,4 @@ void SERCOM5_USART_ReadCallbackRegister( SERCOM_USART_RING_BUFFER_CALLBACK callb
 #endif
 // DOM-IGNORE-END
 
-#endif //PLIB_SERCOM5_USART_H
+#endif /* PLIB_TC3_H */

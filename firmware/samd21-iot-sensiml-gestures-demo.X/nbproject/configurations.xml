@@ -39,6 +39,10 @@
             <logicalFolder displayName="systick" name="f7" projectFiles="true">
               <itemPath>../src/config/SAMD21_IOT_WG_BMI160/peripheral/systick/plib_systick.h</itemPath>
             </logicalFolder>
+            <logicalFolder displayName="tc" name="f9" projectFiles="true">
+              <itemPath>../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc_common.h</itemPath>
+              <itemPath>../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc3.h</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <itemPath>../src/config/SAMD21_IOT_WG_BMI160/device_cache.h</itemPath>
           <itemPath>../src/config/SAMD21_IOT_WG_BMI160/toolchain_specifics.h</itemPath>
@@ -79,6 +83,10 @@
             </logicalFolder>
             <logicalFolder displayName="systick" name="f7" projectFiles="true">
               <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/peripheral/systick/plib_systick.h</itemPath>
+            </logicalFolder>
+            <logicalFolder displayName="tc" name="f9" projectFiles="true">
+              <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc_common.h</itemPath>
+              <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc3.h</itemPath>
             </logicalFolder>
           </logicalFolder>
           <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/device_cache.h</itemPath>
@@ -198,6 +206,9 @@
           </logicalFolder>
         </logicalFolder>
       </logicalFolder>
+      <logicalFolder displayName="sensiml" name="sensiml" projectFiles="true">
+        <itemPath>../sensiml/ssi_comms.h</itemPath>
+      </logicalFolder>
       <itemPath>../src/buffer.h</itemPath>
       <itemPath>../src/sensor.h</itemPath>
       <itemPath>../src/app_config.h</itemPath>
@@ -258,6 +269,9 @@
             <logicalFolder displayName="systick" name="f7" projectFiles="true">
               <itemPath>../src/config/SAMD21_IOT_WG_BMI160/peripheral/systick/plib_systick.c</itemPath>
             </logicalFolder>
+            <logicalFolder displayName="tc" name="f9" projectFiles="true">
+              <itemPath>../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc3.c</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder displayName="stdio" name="f2" projectFiles="true">
             <itemPath>../src/config/SAMD21_IOT_WG_BMI160/stdio/xc32_monitor.c</itemPath>
@@ -299,6 +313,9 @@
             <logicalFolder displayName="systick" name="f7" projectFiles="true">
               <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/peripheral/systick/plib_systick.c</itemPath>
             </logicalFolder>
+            <logicalFolder displayName="tc" name="f9" projectFiles="true">
+              <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc3.c</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder displayName="stdio" name="f2" projectFiles="true">
             <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/stdio/xc32_monitor.c</itemPath>
@@ -315,6 +332,9 @@
         <itemPath>../Icm426xx/Icm426xxDriver_HL_apex.c</itemPath>
         <itemPath>../Icm426xx/Icm426xxSelfTest.c</itemPath>
         <itemPath>../Icm426xx/Icm426xxTransport.c</itemPath>
+      </logicalFolder>
+      <logicalFolder displayName="sensiml" name="sensiml" projectFiles="true">
+        <itemPath>../sensiml/ssi_comms.c</itemPath>
       </logicalFolder>
       <itemPath>../src/buffer.c</itemPath>
       <itemPath>../src/main.c</itemPath>
@@ -333,6 +353,7 @@
         <itemPath>../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/sercom5.yml</itemPath>
         <itemPath>../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/settings.yml</itemPath>
         <itemPath>../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/stdio.yml</itemPath>
+        <itemPath>../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/tc3.yml</itemPath>
       </logicalFolder>
       <logicalFolder displayName="SAMD21_IOT_WG_ICM42688.mhc" name="f2" projectFiles="true">
         <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc/cmsis.yml</itemPath>
@@ -347,8 +368,10 @@
         <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc/sercom5.yml</itemPath>
         <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc/settings.yml</itemPath>
         <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc/stdio.yml</itemPath>
+        <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc/tc3.yml</itemPath>
       </logicalFolder>
       <itemPath>Makefile</itemPath>
+      <itemPath>../src/config/SAMD21_IOT_WG_BMI160/harmony-manifest-failure.yml</itemPath>
       <itemPath>../src/config/SAMD21_IOT_WG_BMI160/harmony-manifest-success.yml</itemPath>
       <itemPath>../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc</itemPath>
       <itemPath>../src/config/SAMD21_IOT_WG_ICM42688/SAMD21_IOT_WG_ICM42688.mhc</itemPath>
@@ -359,6 +382,7 @@
     <Elem>../src</Elem>
     <Elem>../bmi160</Elem>
     <Elem>../Icm426xx</Elem>
+    <Elem>../sensiml</Elem>
     <Elem>../knowledgepack</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
@@ -369,14 +393,14 @@
         <targetDevice>ATSAMD21G18A</targetDevice>
         <targetHeader/>
         <targetPluginBoard/>
-        <platformTool>nEdbgTool</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>3.00</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD21_DFP" vendor="Microchip" version="3.4.116"/>
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
+        <pack name="SAMD21_DFP" vendor="Microchip" version="3.4.116"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -1110,6 +1134,54 @@
         <C32Global>
         </C32Global>
       </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc3.c">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc3.h">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_ICM42688/peripheral/tc/plib_tc_common.h">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
       <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_ICM42688/startup_xc32.c">
         <C32>
         </C32>
@@ -1306,7 +1378,7 @@
         <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
-        <property key="common-include-directories" value="..\bmi160;..\knowledgepack\libsensiml"/>
+        <property key="common-include-directories" value="..\bmi160;..\sensiml;..\knowledgepack\libsensiml"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
@@ -1661,6 +1733,8 @@
       </Simulator>
       <Tool>
         <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="arm.use_vtor" value="false"/>
+        <property key="arm.vtor_adr" value="exception_table"/>
         <property key="communication.activationmode" value="nohv"/>
         <property key="communication.interface" value="swd"/>
         <property key="communication.speed" value="2.000"/>
@@ -1669,6 +1743,7 @@
         <property key="firmware.toolpack" value="Press to select which tool pack to use"/>
         <property key="firmware.update.action" value="firmware.update.use.latest"/>
         <property key="freeze.timers" value="false"/>
+        <property key="lastid" value=""/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
@@ -1683,7 +1758,6 @@
         <property key="memories.programmemory.ranges" value="0-3ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath" value="C:/Users/toemo/dev/repos/tjgarcia-mchp/ml-samd21-iot-sensiml-gestures-demo/tmp/firmware/samd21-iot-sensiml-gestures-demo.X/debug/SAMD21_IOT_WG_BMI160/samd21-iot-sensiml-gestures-demo_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges" value="${memories.dataflash.default}"/>
@@ -1693,6 +1767,9 @@
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.programuserotp" value="false"/>
+        <property key="script.log_level" value="0"/>
+        <property key="script.reset_delay" value="0"/>
+        <property key="script.show_output" value="false"/>
         <property key="toolpack.updateoptions" value="toolpack.updateoptions.uselatestoolpack"/>
         <property key="toolpack.updateoptions.packversion" value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value=""/>
@@ -1721,7 +1798,6 @@
         <property key="memories.programmemory.ranges" value="0-3ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath" value="C:/Users/toemo/dev/repos/tjgarcia-mchp/ml-samd21-iot-sensiml-gestures-demo/tmp/firmware/samd21-iot-sensiml-gestures-demo.X/debug/SAMD21_IOT_WG_BMI160/samd21-iot-sensiml-gestures-demo_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges" value="${memories.dataflash.default}"/>
@@ -1748,8 +1824,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
         <pack name="SAMD21_DFP" vendor="Microchip" version="3.4.116"/>
+        <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -1844,6 +1920,214 @@
         </C32Global>
       </item>
       <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/ATSAMD21G18A.ld">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/GraphSettings.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/cmsis.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/core.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/dfp.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/eic.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/evsys.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/nvmctrl.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/project.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/sercom1.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/sercom5.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/settings.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/stdio.yml">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/SAMD21_IOT_WG_BMI160.mhc/tc3.yml">
         <C32>
         </C32>
         <C32-AR>
@@ -2323,6 +2607,54 @@
         <C32Global>
         </C32Global>
       </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc3.c">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc3.h">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/peripheral/tc/plib_tc_common.h">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
       <item ex="true" overriding="false" path="../src/config/SAMD21_IOT_WG_BMI160/startup_xc32.c">
         <C32>
         </C32>
@@ -2371,7 +2703,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/ac.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/ac.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2387,7 +2719,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/adc.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/adc.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2403,7 +2735,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dac.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dac.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2419,7 +2751,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dmac.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dmac.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2435,7 +2767,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dsu.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/dsu.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2451,7 +2783,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/eic.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/eic.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2467,7 +2799,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/evsys.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/evsys.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2483,7 +2815,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/gclk.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/gclk.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2499,7 +2831,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/hmatrixb.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/hmatrixb.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2515,7 +2847,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/i2s.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/i2s.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2531,7 +2863,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/mtb.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/mtb.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2547,7 +2879,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/nvmctrl.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/nvmctrl.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2563,7 +2895,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/pac.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/pac.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2579,7 +2911,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/pm.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/pm.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2595,7 +2927,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/port.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/port.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2611,7 +2943,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/ptc.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/ptc.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2627,7 +2959,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/rtc.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/rtc.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2643,7 +2975,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/sercom.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/sercom.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2659,7 +2991,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/sysctrl.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/sysctrl.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2675,7 +3007,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/tc.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/tc.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2691,7 +3023,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/tcc.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/tcc.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2707,7 +3039,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/usb.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/usb.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2723,7 +3055,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/wdt.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/component/wdt.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2739,7 +3071,7 @@
         <C32Global>
         </C32Global>
       </item>
-      <item ex="true" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/pio/samd21g18a.h">
+      <item ex="false" overriding="false" path="../src/packs/ATSAMD21G18A_DFP/pio/samd21g18a.h">
         <C32>
         </C32>
         <C32-AR>
@@ -2903,7 +3235,7 @@
         <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
-        <property key="common-include-directories" value="..\Icm426xx;..\knowledgepack\libsensiml"/>
+        <property key="common-include-directories" value="..\Icm426xx;..\sensiml;..\knowledgepack\libsensiml"/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
         <property key="mdtcm" value=""/>
@@ -3280,6 +3612,7 @@
         <property key="memories.programmemory.ranges" value="0-3ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath" value="C:/Users/toemo/dev/repos/tjgarcia-mchp/ml-samd21-iot-sensiml-gestures-demo/tmp/firmware/samd21_iot_sensiml_gestures_demo.X/debug/SAMD21_IOT_WG_ICM42688/samd21_iot_sensiml_gestures_demo_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges" value="${memories.dataflash.default}"/>
@@ -3317,6 +3650,7 @@
         <property key="memories.programmemory.ranges" value="0-3ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath" value="C:/Users/toemo/dev/repos/tjgarcia-mchp/ml-samd21-iot-sensiml-gestures-demo/tmp/firmware/samd21_iot_sensiml_gestures_demo.X/debug/SAMD21_IOT_WG_ICM42688/samd21_iot_sensiml_gestures_demo_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges" value="${memories.dataflash.default}"/>
