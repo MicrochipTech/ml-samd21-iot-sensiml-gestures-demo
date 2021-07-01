@@ -4,7 +4,7 @@
 | :--: |
 | Deployed gesture recognizer |
 
-## Overview
+## Repository Overview
 This repository is a companion to the [Gesture Recognition with SensiML
 tutorial](https://microchipdeveloper.com/machine-learning:gesturerecognition-with-sensiml)
 on the Microchip Developer website. It contains the firmware to classify a few different motion gestures on a SAMD21 Machine Learning Kit with the [Bosch BMI160
@@ -23,23 +23,33 @@ The supported gestures (shown in the video above) are:
 
 In addition there is also an 'unknown' class for gesture-like movement and an 'idle' class for low motion activity.
 
-## Performing Gestures
-Gestures should be performed in a way that feels natural, using a thumb and index finger grip around the SAMD21 board as shown in the image below. The top of the board should be facing away from the user, with the USB connector oriented towards the ground.
+## Continuous Gestures Dataset
 
-| ![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg) |
-| :--: |
-| Thumb and index finger grip |
+The gestures dataset was collected by Microchip employees and consists of two test subjects performing the continuous gestures as described in the section above with a [SAMD21 BMI160 evaluation board](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A). The dataset can be downloaded from the [releases page](../../releases) - it includes a collection of 10 second long samples in CSV format (ax,ay,az,gx,gy,gz format) split into training and test folds. CSV files are named according to the following template:
 
-The supported gestures are listed below (described from user's point of view):
+``<class>-<participant-id>-<extra-metadata>-<collection-date-yymmdd>-<sample-number>.csv``
 
-- Figure Eight - Move the board in a figure eight pattern, starting the gesture from the top of the eight and going left (counterclockwise) at a slow to moderate speed
-- Up-down - Move board up and down continuously at a moderate speed
-- Wave - Wave the board side to side at a moderate speed as if you were greeting someone
-- Wheel - Move the board in a clockwise circle (or wheel) continuously, at a moderate speed
+A [DCLI](https://sensiml.com/documentation/data-capture-lab/importing-external-sensor-data.html#dcli-format-and-pre-labeled-data) descriptor file is also included for each fold for easy import into SensiML's [Data Capture Lab](https://sensiml.com/documentation/data-capture-lab/index.html).
 
-Also see the GIF at the top of this document for further reference.
+In addition to the target gestures, some additional gestures - *triangle*, *forward wheel*, the letter *V*, and others - were collected to make up the *unknown* gestures class, which is used to help improve and validate the models discriminatory ability.
 
-## Firmware Operation
+Furthermore, the *idle* class data consists of scenarios where the device is fully at rest in different orientations, and other scenarios with small motion activity that included fidgeting with the board (manipulating the board randomly with the fingers) and pacing around the room while holding the board.
+
+## Hardware Used
+* SAMD21 Machine Learning Evaluation Kit with Bosch BMI160 IMU [(EV45Y33A)](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A)
+* SAMD21 Machine Learning Evaluation Kit with TDK ICM42688 IMU [(EV18H79A)](https://www.microchip.com/developmenttools/ProductDetails/EV18H79A)
+
+## Software Used
+* MPLAB® X IDE (https://microchip.com/mplab/mplab-x-ide)
+* MPLAB® XC32 compiler (https://microchip.com/mplab/compilers)
+* MPLAB® Harmony 3 (https://www.microchip.com/harmony)
+* SensiML Analytics Toolkit (https://sensiml.com/download/)
+
+## Related Documentation
+* ATSAMD21G18 [Product Family Page](https://www.microchip.com/wwwproducts/en/ATSAMD21G18)
+* SAM-IoT WG Development Board [Product Details](https://www.microchip.com/developmenttools/ProductDetails/EV75S95A)
+
+# Firwmare Operation
 The firmware can be thought of as running in one of five states as reflected by the onboard LEDs and described in the table below:
 
 | State |	LED Behavior |	Description |
@@ -69,26 +79,21 @@ A sample of the terminal output is shown in the figure below.
 | :--: |
 | UART Terminal Output |
 
-## Continuous Gestures Dataset
+## Performing Gestures
+Gestures should be performed in a way that feels natural, using a thumb and index finger grip around the SAMD21 board as shown in the image below. The top of the board should be facing away from the user, with the USB connector oriented towards the ground.
 
-The gestures dataset was collected by Microchip employees and consists of two test subjects performing the continuous gestures as described in the section above with a [SAMD21 BMI160 evaluation board](https://www.microchip.com/developmenttools/ProductDetails/EV45Y33A). The dataset can be downloaded from the [releases page](../../releases) - it includes a collection of 10 second long samples in CSV format (ax,ay,az,gx,gy,gz format) split into training and test folds. CSV files are named according to the following template:
+| ![Thumb and index finger grip](assets/thumb-forefinger-grip.jpg) |
+| :--: |
+| Thumb and index finger grip |
 
-``<class>-<participant-id>-<extra-metadata>-<collection-date-yymmdd>-<sample-number>.csv``
+The supported gestures are listed below (described from user's point of view):
 
-A [DCLI](https://sensiml.com/documentation/data-capture-lab/importing-external-sensor-data.html#dcli-format-and-pre-labeled-data) descriptor file is also included for each fold for easy import into SensiML's [Data Capture Lab](https://sensiml.com/documentation/data-capture-lab/index.html).
+- Figure Eight - Move the board in a figure eight pattern, starting the gesture from the top of the eight and going left (counterclockwise) at a slow to moderate speed
+- Up-down - Move board up and down continuously at a moderate speed
+- Wave - Wave the board side to side at a moderate speed as if you were greeting someone
+- Wheel - Move the board in a clockwise circle (or wheel) continuously, at a moderate speed
 
-In addition to the target gestures, some additional gestures - *triangle*, *forward wheel*, the letter *V*, and others - were collected to make up the *unknown* gestures class, which is used to help improve and validate the models discriminatory ability.
-
-Furthermore, the *idle* class data consists of scenarios where the device is fully at rest in different orientations, and other scenarios with small motion activity that included fidgeting with the board (manipulating the board randomly with the fingers) and pacing around the room while holding the board.
-
-## Sensor Configuration
-Binary builds of the data logging firmware used in the data collection for this project can be downloaded from the [releases page](../../releases); see the [ml-samd21-iot-imu-data-logger](https://github.com/MicrochipTech/ml-samd21-iot-imu-data-logger) repository to build data logging firmware with different sensor configurations.
-
-Sensor configuration values used in the data collection are summarized in the table below. Note that only accelerometer data was used in training the classifier.
-
-| IMU Sensor | Axes | Sampling Rate | Accelerometer Range | Gyrometer Range |
-| --- | --- | --- | --- | --- |
-| Bosch [BMI160](https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi160/) | Ax, Ay, Az, Gx, Gy, Gz | 100Hz | 16G | 2000DPS |
+Also see the GIF at the top of this document for further reference.
 
 ## Firmware Benchmark
 Measured with the BMI160 sensor configuration, ``-O2`` level compiler optimizations, and 48MHz clock
@@ -100,3 +105,12 @@ Measured with the BMI160 sensor configuration, ``-O2`` level compiler optimizati
 Below is the confusion matrix for the test dataset. Note that the classes are highly imbalanced so accuracy is not a good indicator of overall performance.
 
 ![Test set confusion matrix](assets/confusion-matrix.png)
+
+# Sensor Configuration
+Binary builds of the data logging firmware used in the data collection for this project can be downloaded from the [releases page](../../releases); see the [ml-samd21-iot-imu-data-logger](https://github.com/MicrochipTech/ml-samd21-iot-imu-data-logger) repository to build data logging firmware with different sensor configurations.
+
+Sensor configuration values used in the data collection are summarized in the table below. Note that only accelerometer data was used in training the classifier.
+
+| IMU Sensor | Axes | Sampling Rate | Accelerometer Range | Gyrometer Range |
+| --- | --- | --- | --- | --- |
+| Bosch [BMI160](https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi160/) | Ax, Ay, Az, Gx, Gy, Gz | 100Hz | 16G | 2000DPS |
