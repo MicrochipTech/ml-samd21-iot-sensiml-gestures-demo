@@ -290,7 +290,7 @@ int main ( void )
 #endif            
             buffer_reset(&snsr_buffer); 
             continue;
-        }     
+        }
         else {
             buffer_data_t *ptr;
             int rdcnt = buffer_get_read_buffer(&snsr_buffer, &ptr);
