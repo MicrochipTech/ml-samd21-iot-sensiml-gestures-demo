@@ -1,11 +1,11 @@
 /*******************************************************************************
-  Sensor Buffering Interface Source File
+  Sensor Buffering Interface Header File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    buffer.c
+    buffer.h
 
   Summary:
     This file contains the ring buffer API used for buffering sensor data
@@ -20,10 +20,7 @@
     - The API provided here is strictly designed for a single reader thread and 
       single writer thread; other uses will cause race conditions.
     - It's further assumed that the reader will *never* interrupt the writer to 
-      call buffer_reset
-    - This API does not account for the possibility of out of order
-      execution - in such a case memory synchronization primitives must be 
-      introduced.
+      call buffer_reset - this will cause a race condition
  *******************************************************************************/
 
 /*******************************************************************************
@@ -73,6 +70,24 @@
 #error "SNSR_DATA_TYPE must be defined"
 #endif
 
+// Define the compiler/memory fence directive to use
+// This directive ensures that all data memory operations complete before
+// the updating of the read or write index
+#if defined(__GNUC__)
+#   if defined(__arm__)
+    // Full compiler/memory barrier
+#   define __buffer_sync()        __asm__ volatile ("dsb" ::: "memory")
+#   else
+    // This directive only ensures the *compiler* doesn't reorder data memory operations before
+    // the updating of the read or write index
+    // - this is enough on platforms that don't do out of order execution
+#   define __buffer_sync()        __asm__ volatile ("" ::: "memory")
+#   endif //if defined(__arm__)
+#else
+#   define __buffer_sync()        do {} while (0)
+#   warning "buffer.h:: No memory barrier defined; thread safety not guaranteed"
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -85,12 +100,17 @@ typedef buffer_data_t buffer_frame_t[SNSR_NUM_AXES];
 // buffer_size_t MUST be set to a type whose size is <= the data bus width
 // this makes loads and stores of the read/write index atomic
 // Otherwise, we'd have to get interrupt masking involved..
-#if defined(__AVR__)
+// AVR, PIC10/12/14/16/18
+#if defined(__AVR__) || defined(__XC8)
     typedef uint8_t buffer_size_t;
-#elif defined (__arm__)
+// PIC24, dsPIC    
+#elif defined(__dsPIC30__) || defined(__XC16)
+    typedef uint16_t buffer_size_t;    
+// SAM, PIC32C, PIC32M
+#elif defined (__arm__) || defined(__XC32)
     typedef uint32_t buffer_size_t;
 #else
-#   warning "buffer.h:: Unsure about architecture, assuming 32-bit accesses are atomic"    
+#   warning "buffer.h:: Unsure about architecture, assuming 32-bit accesses are atomic"
     typedef uint32_t buffer_size_t;
 #endif
 

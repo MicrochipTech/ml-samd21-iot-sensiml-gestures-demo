@@ -1,5 +1,5 @@
 /*******************************************************************************
-  Sensor Driver Interface Source File
+  BMI160 Sensor Driver Interface Source File
 
   Company:
     Microchip Technology Inc.
@@ -8,7 +8,7 @@
     bmi160_sensor.c
 
   Summary:
-    This file defines a simplified interface API for configuring the IMU sensor
+    This file implements the simplified sensor API for configuring the BMI160 IMU sensor
 
   Description:
     None
@@ -40,7 +40,19 @@
 #include <stdint.h>
 #include <string.h>
 #include "sensor.h"
+#include "bmi160.h"
+// *****************************************************************************
+// *****************************************************************************
+// Section: Platform specific includes
+// *****************************************************************************
+// *****************************************************************************
+#include "definitions.h"
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Macros for setting sample rate and sensor range
+// *****************************************************************************
+// *****************************************************************************
 // Macro function to get the proper Macro defines corresponding to SNSR_SAMPLE_RATE
 #if (SNSR_SAMPLE_RATE_UNIT == SNSR_SAMPLE_RATE_UNIT_KHZ)
     #error "BMI160 driver doesn't support sample rate units in kHZ; use SNSR_SAMPLE_RATE_UNIT_HZ instead"
@@ -57,7 +69,12 @@
 #define _SNSRGYRORANGEEXPR(x) __SNSRGYRORANGEMACRO(x)
 #define _GET_IMU_GYRO_RANGE_MACRO() _SNSRGYRORANGEEXPR(SNSR_GYRO_RANGE)
 
-int8_t bmi160_i2c_read (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len) {
+// *****************************************************************************
+// *****************************************************************************
+// Section: Serial comms implementation
+// *****************************************************************************
+// *****************************************************************************
+static int8_t bmi160_i2c_read (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len) {
     if(SERCOM1_I2C_WriteRead((uint16_t) dev_addr, &reg_addr, 1, data, (uint32_t) len)) {
         while(SERCOM1_I2C_IsBusy());
         return BMI160_OK;
@@ -67,7 +84,7 @@ int8_t bmi160_i2c_read (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint1
     }
 }
 
-int8_t bmi160_i2c_write (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len) {
+static int8_t bmi160_i2c_write (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len) {
     static uint8_t buff [SNSR_COM_BUF_SIZE];
     
     if ((len + 1) > SNSR_COM_BUF_SIZE)
@@ -84,7 +101,12 @@ int8_t bmi160_i2c_write (uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint
     }
 }
 
-int bmi160_sensor_read(struct sensor_device_t *sensor, struct sensor_buffer_t *buffer)
+// *****************************************************************************
+// *****************************************************************************
+// Section: Platform generic sensor implementation functions
+// *****************************************************************************
+// *****************************************************************************
+int bmi160_sensor_read(struct sensor_device_t *sensor, buffer_data_t *ptr)
 {
     /* Read bmi160 sensor data */
     struct bmi160_sensor_data accel;
@@ -96,8 +118,6 @@ int bmi160_sensor_read(struct sensor_device_t *sensor, struct sensor_buffer_t *b
         return status;
     
     /* Convert sensor data to buffer type and write to buffer */
-    buffer_frame_t frame;
-    buffer_data_t *ptr = frame;
 #if SNSR_USE_ACCEL_X
     *ptr++ = (buffer_data_t) accel.x;
 #endif
@@ -116,7 +136,6 @@ int bmi160_sensor_read(struct sensor_device_t *sensor, struct sensor_buffer_t *b
 #if SNSR_USE_GYRO_Z
     *ptr++ = (buffer_data_t) gyro.z;
 #endif
-    buffer_write(buffer, &frame, 1);
     
     return status;
 }
@@ -136,9 +155,10 @@ int bmi160_sensor_init(struct sensor_device_t *sensor) {
     return sensor->status;
 }
 
-int bmi160_sensor_set_config(struct sensor_device_t *sensor) {
-    int8_t errcode = BMI160_OK;
-    
+int bmi160_sensor_set_config(struct sensor_device_t *sensor) {    
+    if (sensor->status != BMI160_OK)
+        return sensor->status;
+            
     /* Select the Output data rate, range of accelerometer sensor */
     sensor->device.accel_cfg.odr = _GET_IMU_SAMPLE_RATE_MACRO(ACCEL); //BMI160_ACCEL_ODR_100HZ;
     sensor->device.accel_cfg.range = _GET_IMU_ACCEL_RANGE_MACRO();//BMI160_ACCEL_RANGE_2G;
@@ -153,10 +173,24 @@ int bmi160_sensor_set_config(struct sensor_device_t *sensor) {
     sensor->device.gyro_cfg.bw = BMI160_GYRO_BW_NORMAL_MODE;
 
     /* Select the power mode of Gyroscope sensor */
-    sensor->device.gyro_cfg.power = BMI160_GYRO_NORMAL_MODE;     
+    sensor->device.gyro_cfg.power = BMI160_GYRO_NORMAL_MODE;
 
     /* Set the sensor configuration */
-    errcode = bmi160_set_sens_conf(&sensor->device);
+    if ((sensor->status = bmi160_set_sens_conf(&sensor->device)) != BMI160_OK)
+        return sensor->status;
+    
+//    /* Set up fast offset compensation */
+//    struct bmi160_foc_conf foc_conf;
+//    struct bmi160_offsets offsets;
+//    
+//    foc_conf.acc_off_en = BMI160_ENABLE;
+//    foc_conf.foc_acc_x  = BMI160_FOC_ACCEL_0G;
+//    foc_conf.foc_acc_y  = BMI160_FOC_ACCEL_0G;
+//    foc_conf.foc_acc_z  = BMI160_FOC_ACCEL_POSITIVE_G;
+//    foc_conf.gyro_off_en = BMI160_ENABLE;
+//    foc_conf.foc_gyr_en = BMI160_ENABLE;
+//
+//    sensor->status = bmi160_start_foc(&foc_conf, &offsets, &sensor->device);
     
     /* Configure sensor interrupt */
     struct bmi160_int_settg int_config;
@@ -176,7 +210,8 @@ int bmi160_sensor_set_config(struct sensor_device_t *sensor) {
     int_config.int_pin_settg.latch_dur = BMI160_LATCH_DUR_NONE;// non-latched output
             
     /* Set the data ready interrupt */
-    errcode |= bmi160_set_int_config(&int_config, &sensor->device);
+    if ((sensor->status = bmi160_set_int_config(&int_config, &sensor->device)) != BMI160_OK)
+        return sensor->status;
     
-    return errcode;
+    return sensor->status;
 }

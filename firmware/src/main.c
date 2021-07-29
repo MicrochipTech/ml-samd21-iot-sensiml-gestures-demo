@@ -24,26 +24,36 @@
 
 #include <stddef.h>                     // Defines NULL
 #include <stdbool.h>                    // Defines true
+#include <stdint.h>
 #include <stdlib.h>                     // Defines EXIT_FAILURE
-#include "definitions.h"                // SYS function prototypes
+#include <stdio.h>
 #include "buffer.h"
+#include "ringbuffer.h"
 #include "sensor.h"
 #include "app_config.h"
 #if STREAM_FORMAT_IS(SMLSS)
 #include "ssi_comms.h"
 #elif STREAM_FORMAT_IS(NONE)
 #include "kb.h"
-#endif
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Main Entry Point
-// *****************************************************************************
-// *****************************************************************************
-
-#if STREAM_FORMAT_IS(SMLSS)
-static ssi_io_funcs_t ssi_io_s;
+#include "sml_output.h"
+#include "sml_recognition_run.h"
 #endif //STREAM_FORMAT_IS(SMLSS)
+// *****************************************************************************
+// *****************************************************************************
+// Section: Platform specific includes
+// *****************************************************************************
+// *****************************************************************************
+#include "definitions.h"
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Global variables
+// *****************************************************************************
+// *****************************************************************************
+
+/* Must be large enough to hold the connect/disconnect strings from SensiML DCL */
+static uint8_t _uartRxBuffer_data[128];
+static ringbuffer_t uartRxBuffer;
 
 static volatile uint32_t tickcounter = 0;
 static volatile unsigned int tickrate = 0;
@@ -51,85 +61,45 @@ static volatile unsigned int tickrate = 0;
 static struct sensor_device_t sensor;
 static struct sensor_buffer_t snsr_buffer;
 
-static uint8_t led_mask = 0;
-
-void led_toggle(uint8_t led_mask) {
-    if (led_mask & 1) LED_BLUE_Toggle();
-    if (led_mask & 2) LED_GREEN_Toggle();
-    if (led_mask & 4) LED_YELLOW_Toggle();
-    if (led_mask & 8) LED_RED_Toggle();
-}
-
-#if STREAM_FORMAT_IS(SMLSS)
-static SNSR_DATA_TYPE packet_data_buffer[SNSR_NUM_AXES * SNSR_SAMPLES_PER_PACKET];
-#define PACKET_BUFFER_BYTE_LEN (SNSR_NUM_AXES * SNSR_SAMPLES_PER_PACKET * sizeof(SNSR_DATA_TYPE))
-static int num_packets = 0;
-static char json_config_str[512];
-
-static void connect_reconnect()
-{
-    uint32_t time = read_timer_ms();
-
-    printf("%s\n", json_config_str);
-    while(!ssi_io_s.connected) {
-        if(SERCOM5_USART_ReadCountGet() >= CONNECT_CHARS)
-        {
-            ssi_try_connect();
-        }
-        if ((read_timer_ms() - time) >= 1000) {
-            time = read_timer_ms();
-            printf("%s\n", json_config_str);
-        }
+// *****************************************************************************
+// *****************************************************************************
+// Section: Platform specific stub definitions
+// *****************************************************************************
+// *****************************************************************************
+void SERCOM5_Handler() {
+    uint8_t *ptr;
+    if (UART_IsRxReady() && ringbuffer_get_write_buffer(&uartRxBuffer, &ptr)) {
+        *ptr = UART_RX_DATA;
+        ringbuffer_advance_write_index(&uartRxBuffer, 1);
     }
-    buffer_reset(&snsr_buffer);
 }
 
-static void build_json_config(void)
-{
-    int written=0;
-    int snsr_index = 0;
-    written += sprintf(json_config_str, "{\"version\":%d, \"sample_rate\":%d,"
-                        "\"samples_per_packet\":%d,"
-                        "\"column_location\":{"
-                        , SSI_JSON_CONFIG_VERSION, SNSR_SAMPLE_RATE, SNSR_SAMPLES_PER_PACKET);
-    #if SNSR_USE_ACCEL_X
-    written += sprintf(json_config_str+written, "\"AccelerometerX\":%d,", snsr_index++);
-    #endif
-    #if SNSR_USE_ACCEL_Y
-    written += sprintf(json_config_str+written, "\"AccelerometerY\":%d,", snsr_index++);
-    #endif
-    #if SNSR_USE_ACCEL_Z
-    written += sprintf(json_config_str+written, "\"AccelerometerZ\":%d,", snsr_index++);
-    #endif
-    #if SNSR_USE_GYRO_X
-    written += sprintf(json_config_str+written, "\"GyroscopeX\":%d,", snsr_index++);
-    #endif
-    #if SNSR_USE_GYRO_Y
-    written += sprintf(json_config_str+written, "\"GyroscopeY\":%d,", snsr_index++);
-    #endif
-    #if SNSR_USE_GYRO_Z
-    written += sprintf(json_config_str+written, "\"GyroscopeZ\":%d", snsr_index++);
-    #endif
-    if(json_config_str[written-1] == ',')
-    {
-        written--;
-    }
-    sprintf(json_config_str+written, "}}");
+static size_t __attribute__(( unused )) UART_Write(uint8_t *ptr, const size_t nbytes) {
+    return SERCOM5_USART_Write(ptr, nbytes) ? nbytes : 0;
 }
 
-#endif //STREAM_FORMAT_IS(SMLSS)
+// *****************************************************************************
+// *****************************************************************************
+// Section: Generic stub definitions
+// *****************************************************************************
+// *****************************************************************************
+void Null_Handler() {
+    // Do nothing
+}
 
-void Ticker_Callback(TC_TIMER_STATUS status, uintptr_t context) {
-    static unsigned int mstick = 0;
-    (void) status;
-    (void) context;
+static size_t __attribute__(( unused )) UART_Read(uint8_t *ptr, const size_t nbytes) {
+    return ringbuffer_read(&uartRxBuffer, ptr, nbytes);
+}
+
+void Ticker_Callback() {
+    static uint32_t mstick = 0;
 
     ++tickcounter;
     if (tickrate == 0) {
         mstick = 0;
     }
     else if (++mstick == tickrate) {
-        led_toggle(led_mask);
+        LED_STATUS_Toggle();
         mstick = 0;
     }
 }
@@ -139,7 +109,7 @@ uint64_t read_timer_ms(void) {
 }
 
 uint64_t read_timer_us(void) {
-    return tickcounter * 1000U + (uint32_t) TC_TimerGet();
+    return tickcounter * 1000U + (uint32_t) TC_TimerGet_us();
 }
 
 void sleep_ms(uint32_t ms) {
@@ -152,74 +122,120 @@ void sleep_us(uint32_t us) {
     while ((read_timer_us() - t0) < us) { };
 }
 
-
 // For handling read of the sensor data
-void SNSR_ISR_HANDLER(uintptr_t context) {
-    (void) context;
-    
+void SNSR_ISR_HANDLER() {
     /* Check if any errors we've flagged have been acknowledged */
     if (sensor.status != SNSR_STATUS_OK) {
         return;
     }
-    
-    sensor.status = sensor_read(&sensor, &snsr_buffer);
+
+    buffer_data_t *ptr;
+    if (buffer_get_write_buffer(&snsr_buffer, &ptr) \
+            && (sensor.status = sensor_read(&sensor, ptr)) == SNSR_STATUS_OK) {
+        buffer_advance_write_index(&snsr_buffer, 1);
+    }
+    else {
+        snsr_buffer.overrun = true;
+    }
 }
 
-/* Original mapping */
-//1 - figeight
-//2 - idle
-//3 - unknown
-//4 - updown
-//5 - wave
-//6 - wheel
+#if STREAM_FORMAT_IS(SMLSS)
+static char json_config_str[SML_MAX_CONFIG_STRLEN];
 
-/* Squashed down mapping for LEDs */
-//1 - figeight
-//2 - updown
-//3 - wave
-//4 - wheel
+size_t ssi_build_json_config(char json_config_str[], size_t maxlen)
+{
+    size_t written=0;
+    size_t snsr_index = 0;
 
-const char class_map[7][16] = {
-    "UNK",
-    "figure eight",
-    "idle",
-    "unknown",
-    "up-down",
-    "wave",
-    "wheel"
-};
+    written += snprintf(json_config_str, maxlen,
+            "{\"version\":%d"
+            ",\"sample_rate\":%d"
+            ",\"samples_per_packet\":%d"
+            ",\"column_location\":{"
+            , SSI_JSON_CONFIG_VERSION, SNSR_SAMPLE_RATE_IN_HZ, SNSR_SAMPLES_PER_PACKET);
+#if SNSR_USE_ACCEL_X
+    written += snprintf(json_config_str+written, maxlen-written, "\"AccelerometerX\":%d,", snsr_index++);
+#endif
+#if SNSR_USE_ACCEL_Y
+    written += snprintf(json_config_str+written, maxlen-written, "\"AccelerometerY\":%d,", snsr_index++);
+#endif
+#if SNSR_USE_ACCEL_Z
+    written += snprintf(json_config_str+written, maxlen-written, "\"AccelerometerZ\":%d,", snsr_index++);
+#endif
+#if SNSR_USE_GYRO_X
+    written += snprintf(json_config_str+written, maxlen-written, "\"GyroscopeX\":%d,", snsr_index++);
+#endif
+#if SNSR_USE_GYRO_Y
+    written += snprintf(json_config_str+written, maxlen-written, "\"GyroscopeY\":%d,", snsr_index++);
+#endif
+#if SNSR_USE_GYRO_Z
+    written += snprintf(json_config_str+written, maxlen-written, "\"GyroscopeZ\":%d", snsr_index++);
+#endif
+    if(json_config_str[written-1] == ',')
+    {
+        written--;
+    }
+    snprintf(json_config_str+written, maxlen-written, "}}\n");
+
+    return written;
+}
+
+#endif //STREAM_FORMAT_IS(SMLSS)
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Main Entry Point
+// *****************************************************************************
+// *****************************************************************************
 
 int main ( void )
 {
+    int8_t app_failed = 0;
+#if STREAM_FORMAT_IS(SMLSS)
+    uint32_t ssi_adtimer = 0;
+    ssi_io_funcs_t ssi_io_s;
+#endif
+
     /* Initialize all modules */
     SYS_Initialize ( NULL );
-    
-    /* Register and start the LED ticker */
+
+    /* Register and start the millisecond interrupt ticker */
     TC_TimerCallbackRegister(Ticker_Callback);
     TC_TimerStart();
-    
-    /* Activate External Interrupt Controller for sensor capture */
-    MIKRO_INT_CallbackRegister(SNSR_ISR_HANDLER);
-    
+
     /* Initialize our data buffer */
     buffer_init(&snsr_buffer);
-    
+
     printf("\n");
-    
+
+    /* Application init routine */
+    app_failed = 1;
     while (1)
-    {    
+    {
+        /* Initialize the UART RX buffer */
+        if (ringbuffer_init(&uartRxBuffer, _uartRxBuffer_data, sizeof(_uartRxBuffer_data)))
+            break;
+
+        /* Discard any existing UART data */
+        while (UART_IsRxReady())
+            (void) UART_RX_DATA;
+
+        /* Enable the RX interrupt */
+        UART_RXC_Enable();
+
+        /* Init and configure sensor */
         if (sensor_init(&sensor) != SNSR_STATUS_OK) {
-            printf("sensor init result = %d\n", sensor.status);
+            printf("ERROR: sensor init result = %d\n", sensor.status);
             break;
         }
-        
+
         if (sensor_set_config(&sensor) != SNSR_STATUS_OK) {
-            printf("sensor configuration result = %d\n", sensor.status);
+            printf("ERROR: sensor configuration result = %d\n", sensor.status);
             break;
         }
-        
+
         printf("sensor type is %s\n", SNSR_NAME);
-        printf("sensor sample rate set at %d%s\n", SNSR_SAMPLE_RATE, SNSR_SAMPLE_RATE_UNIT_STR);
+        printf("sensor sample rate set at %dHz\n", SNSR_SAMPLE_RATE_IN_HZ);
 #if SNSR_USE_ACCEL
         printf("accelerometer axes %s%s%s enabled with range set at +/-%dGs\n", SNSR_USE_ACCEL_X ? "x" : "", SNSR_USE_ACCEL_Y ? "y" : "", SNSR_USE_ACCEL_Z ? "z" : "", SNSR_ACCEL_RANGE);
 #else
@@ -232,140 +248,154 @@ int main ( void )
 #endif
 
 #if STREAM_FORMAT_IS(SMLSS)
-        ssi_io_s.ssi_read = SERCOM5_USART_Read;
-        ssi_io_s.ssi_write = SERCOM5_USART_Write;
+        /* Init SensiML simple-stream interface */
+        ssi_io_s.ssi_read = UART_Read;
+        ssi_io_s.ssi_write = UART_Write;
         ssi_io_s.connected = false;
         ssi_init(&ssi_io_s);
-        build_json_config();
-
-        connect_reconnect();
-#elif STREAM_FORMAT_IS(NONE)
+        ssi_build_json_config(json_config_str, SML_MAX_CONFIG_STRLEN);
+#elif STREAM_FORMAT_IS(NONE)        
         /* Initialize SensiML Knowledge Pack */
         kb_model_init();
-        
-        const uint8_t *ptr = kb_get_model_uuid_ptr(0);
-        printf("Running SensiML knowledge pack uuid ");
-        printf("%02x", *ptr++); 
-        for (int i=1; i < 15; i++) {
-            if ((i%4) == 0)
-                printf("-");
-            printf("%02x", *ptr++); 
-        }
-        printf("%02x", *ptr++); 
-        printf("\n");
+        sml_output_init(NULL);        
 #endif
-        
-        buffer_reset(&snsr_buffer);
+
+        /* Activate External Interrupt Controller for sensor capture */
+        MIKRO_INT_CallbackRegister(SNSR_ISR_HANDLER);
+
+        /* STATE CHANGE - Application successfully initialized */
+        tickrate = 0;
+        LED_ALL_Off();
+        LED_STATUS_On();
+
+#if STREAM_FORMAT_IS(SMLSS)
+        /* STATE CHANGE - Application now waiting for connect */
+#elif !STREAM_FORMAT_IS(NONE)
+        /* STATE CHANGE - Application is streaming */
+        tickrate = TICK_RATE_SLOW;
+#else
+        /* STATE CHANGE - Application is running inference model */
+        tickrate = TICK_RATE_SLOW;
+#endif //STREAM_FORMAT_IS(SMLSS)
+
+        app_failed = 0;
         break;
     }
     
-    int clsid = 0;
-    uint32_t runtime = 0;
-
-#if !STREAM_FORMAT_IS(NONE)                
-    (void) clsid;
-    (void) runtime;
-#endif
-    
-    while (1)
+    while (!app_failed)
     {
-        /* Maintain state machines of all polled MPLAB Harmony modules. */
+        /* Maintain state machines of all system modules. */
         SYS_Tasks ( );
-        
+
         if (sensor.status != SNSR_STATUS_OK) {
-            printf("Got a bad sensor status: %d\n", sensor.status);
+            printf("ERROR: Got a bad sensor status: %d\n", sensor.status);
             break;
         }
+#if STREAM_FORMAT_IS(SMLSS)
+        else if (!ssi_connected()) {
+            if (ringbuffer_get_read_bytes(&uartRxBuffer) >= CONNECT_CHARS) {
+                ssi_try_connect();
+                ringbuffer_advance_read_index(&uartRxBuffer, ringbuffer_get_read_bytes(&uartRxBuffer));
+            }
+            if (ssi_connected()) {
+                /* STATE CHANGE - Application is streaming */
+                tickrate = TICK_RATE_SLOW;
+
+                /* Reset the sensor buffer */
+                MIKRO_INT_CallbackRegister(Null_Handler);
+                buffer_reset(&snsr_buffer);
+                MIKRO_INT_CallbackRegister(SNSR_ISR_HANDLER);
+            }
+            if (read_timer_ms() - ssi_adtimer > 500) {
+                ssi_adtimer = read_timer_ms();
+                UART_Write((uint8_t *) json_config_str, strlen(json_config_str));
+            }
+        }
+#endif
         else if (snsr_buffer.overrun == true) {
             printf("\n\n\nOverrun!\n\n\n");
-            
-            // Light the LEDs to indicate overflow
+
+            /* STATE CHANGE - buffer overflow */
             tickrate = 0;
             LED_ALL_Off();
-            LED_YELLOW_On(); LED_RED_On();  // Indicate OVERFLOW
+            LED_STATUS_On(); LED_RED_On();
             sleep_ms(5000U);
-            LED_ALL_Off(); // Clear OVERFLOW
+            LED_ALL_Off();
+            
+            // Clear OVERFLOW
+            MIKRO_INT_CallbackRegister(Null_Handler);
+            buffer_reset(&snsr_buffer);
+            MIKRO_INT_CallbackRegister(SNSR_ISR_HANDLER);
+            
 #if STREAM_FORMAT_IS(NONE)
-            kb_flush_model_buffer(0);
-#endif            
-            buffer_reset(&snsr_buffer); 
+            /* STATE CHANGE - Application is running inference model */
+            tickrate = TICK_RATE_SLOW;
+#else            
+            /* STATE CHANGE - Application is streaming */
+            tickrate = TICK_RATE_SLOW;
+#endif
             continue;
         }
-        else {
+#if !STREAM_FORMAT_IS(NONE)
+        else if(buffer_get_read_frames(&snsr_buffer) >= SNSR_SAMPLES_PER_PACKET) {
             buffer_data_t *ptr;
-            int rdcnt = buffer_get_read_buffer(&snsr_buffer, &ptr);
-            while ( --rdcnt >= 0 ) {
-#if STREAM_FORMAT_IS(MDV)
-                uint8_t headerbyte = MDV_START_OF_FRAME;
-                
-                while (!SERCOM5_USART_Write(&headerbyte, 1)) { };
-
-                for (int bytecnt=0; bytecnt < sizeof(buffer_frame_t); ) {
-                    bytecnt += SERCOM5_USART_Write((uint8_t *) ptr + bytecnt, sizeof(buffer_frame_t) - bytecnt);
-                }
-                
-                headerbyte = ~headerbyte;
-                while (!SERCOM5_USART_Write(&headerbyte, 1)) { };
-#elif STREAM_FORMAT_IS(ASCII)
+            size_t rdcnt = buffer_get_read_buffer(&snsr_buffer, &ptr);
+            while (rdcnt >= SNSR_SAMPLES_PER_PACKET) {
+    #if STREAM_FORMAT_IS(ASCII)
                 printf("%d", ptr[0]);
-                for (int j=1; j < SNSR_NUM_AXES; j++) {
+                for (int j=1; j < SNSR_NUM_AXES*SNSR_SAMPLES_PER_PACKET; j++) {
                     printf(" %d", ptr[j]);
                 }
                 printf("\n");
-#elif STREAM_FORMAT_IS(SMLSS)
-                for(int i = 0; i < SNSR_NUM_AXES; i++)
-                {
-                    packet_data_buffer[i+(num_packets * SNSR_NUM_AXES)]=ptr[i];
-                }
-                num_packets++;
-                if(num_packets == SNSR_SAMPLES_PER_PACKET)
-                {
-                    if(ssi_io_s.connected)
-                    {
-    #if SSI_JSON_CONFIG_VERSION==2
-                    ssiv2_publish_sensor_data(0, (uint8_t*) packet_data_buffer, PACKET_BUFFER_BYTE_LEN);
-    #elif SSI_JSON_CONFIG_VERSION==1
-                    ssiv1_publish_sensor_data((uint8_t*) packet_data_buffer, PACKET_BUFFER_BYTE_LEN);
-    #endif
-                    num_packets = 0;
-                    }
-                }
-#elif STREAM_FORMAT_IS(NONE)
-                runtime = tickcounter;
-                int ret = kb_run_model(ptr, SNSR_NUM_AXES, 0);
-                if (ret >= 0) {
-                    runtime = tickcounter - runtime;
-                    clsid = ret;
-                    
-                    tickrate = 0;
-                    LED_ALL_Off();
-                    if (clsid == 0 || clsid == 3) {
-                        ;
-                    }
-                    else if (clsid == 2) {
-                        LED_YELLOW_On();
-                    }
-                    else { // if ((lastclsid == 0) || (lastclsid == 2) || (clsid == lastclsid)) {
-                        // Squash down the class ID, skipping 'idle' and 'unknown' state
-                        led_mask = (uint8_t) (1 << (((clsid == 1) ? 1 : (clsid - 2)) - 1));
-                        tickrate = TICK_RATE_FAST;
-                    }
-                    
-                    kb_reset_model(0);
-                    printf("Gesture classified as '%s' in %lums\n", class_map[clsid], runtime);
-                }                
-#endif
+    #elif STREAM_FORMAT_IS(MDV)
+                uint8_t headerbyte = MDV_START_OF_FRAME;
+                UART_Write(&headerbyte, 1);
+                UART_Write((uint8_t *) ptr, sizeof(buffer_frame_t)*SNSR_SAMPLES_PER_PACKET);
+                headerbyte = ~headerbyte;
+                UART_Write(&headerbyte, 1);
+    #elif STREAM_FORMAT_IS(SMLSS)
+                #if (SSI_JSON_CONFIG_VERSION == 2)
+                ssiv2_publish_sensor_data(0, (uint8_t*) ptr, SNSR_SAMPLES_PER_PACKET*sizeof(buffer_frame_t));
+                #elif (SSI_JSON_CONFIG_VERSION == 1)
+                ssiv1_publish_sensor_data((uint8_t*) ptr, SNSR_SAMPLES_PER_PACKET*sizeof(buffer_frame_t));
+                #endif
+    #endif //STREAM_FORMAT_IS(ASCII)
+                rdcnt -= SNSR_SAMPLES_PER_PACKET;
+                ptr += SNSR_NUM_AXES * SNSR_SAMPLES_PER_PACKET;
+                buffer_advance_read_index(&snsr_buffer, SNSR_SAMPLES_PER_PACKET);
+            }
+        }
+#else   /* Template code for processing sensor data */
+        else {
+            buffer_data_t *ptr;
+            size_t rdcnt = buffer_get_read_buffer(&snsr_buffer, &ptr);
+            while (rdcnt--) {
+                sml_recognition_run(ptr, SNSR_NUM_AXES);
                 ptr += SNSR_NUM_AXES;
                 buffer_advance_read_index(&snsr_buffer, 1);
             }
         }
-        
+#endif //!STREAM_FORMAT_IS(NONE)
+
+#if STREAM_FORMAT_IS(SMLSS)
+        if (ssi_connected() && ringbuffer_get_read_bytes(&uartRxBuffer) >= DISCONNECT_CHARS) {
+            ssi_try_disconnect();
+            ringbuffer_advance_read_index(&uartRxBuffer, ringbuffer_get_read_bytes(&uartRxBuffer));
+            if (!ssi_connected()) {
+                /* STATE CHANGE - Application now waiting for connect */
+                tickrate = 0;
+                LED_ALL_Off();
+                LED_STATUS_On();
+            }
+        }
+#endif
+
     }
-        
+
     tickrate = 0;
-    LED_GREEN_Off();
+    LED_ALL_Off();
     LED_RED_On();
-    
+
     return ( EXIT_FAILURE );
 }
 
@@ -373,4 +403,3 @@ int main ( void )
 /*******************************************************************************
  End of File
 */
-
