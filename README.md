@@ -79,6 +79,32 @@ A sample of the terminal output is shown in the figure below.
 | :--: |
 | UART Terminal Output |
 
+Note the firmware class ID mapping is as below:
+
+- *Unknown* - 0 (input outside of modeled behavior)
+- *Figure Eight* - 1
+- *Idle* - 2
+- *Unknown Gesture* - 3 (unknown gesture-like behavior)
+- *Up-down* - 4
+- *Wave* - 5
+- *Wheel* - 6
+
+The UART output can also be visualized with the SensiML [Open Gateway application](https://github.com/sensiml/open-gateway):
+
+1. Open a terminal and change to the directory where you've checked out this repository.
+1. Clone the open-gateway repository and install the dependencies:
+    > `git clone https://github.com/sensiml/open-gateway`\
+    > `pip install -r open-gateway/requirements.txt`
+2. Change the baudrate (`BAUD_RATE` variable) in `open-gateway/config.py` to 115200
+3. Change to the open-gateway directory and run the open-gateway application, passing in the fan demo's model.json description file:
+   > `cd open-gateway`\
+   > `python app.py -m firmware/knowledgepack/libsensiml/model.json`
+4. Connect to the SAMD21 board in the gateway application:
+   * Select the `Recognition` device mode.
+   * Select `Serial` connection type, and enter the UART address (e.g. COM4) in the `Device ID` field.
+   * Click `Connect To Device`.
+6. Switch to the `Test Mode` tab and click `Start Stream`.
+
 ## Performing Gestures
 Gestures should be performed in a way that feels natural, using a thumb and index finger grip around the SAMD21 board as shown in the image below. The top of the board should be facing away from the user, with the USB connector oriented towards the ground.
 
@@ -97,8 +123,8 @@ Also see the GIF at the top of this document for further reference.
 
 ## Firmware Benchmark
 Measured with the BMI160 sensor configuration, ``-O2`` level compiler optimizations, and 48MHz clock
-- 39.4kB Flash
-- 5.6kB RAM
+- 49.5kB Flash
+- 5.1kB RAM
 - 9ms Inference time
 
 ## Classifier Performance

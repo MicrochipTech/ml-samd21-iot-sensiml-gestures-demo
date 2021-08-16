@@ -17,7 +17,7 @@
                 <sourceRootElem>../bmi160</sourceRootElem>
                 <sourceRootElem>../Icm426xx</sourceRootElem>
                 <sourceRootElem>../sensiml</sourceRootElem>
-                <sourceRootElem>../knowledgepack/libsensiml</sourceRootElem>
+                <sourceRootElem>../knowledgepack</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

@@ -7,7 +7,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int sml_recognition_run(SNSR_DATA_TYPE *data, int num_sensors);
+int sml_recognition_run(snsr_data_t *data, int num_sensors);
 
 #ifdef	__cplusplus
 }

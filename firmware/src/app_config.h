@@ -97,7 +97,7 @@
 #define SNSR_USE_GYRO_Z         false
 
 // Size of sensor buffer in samples (must be power of 2)
-#define SNSR_BUF_LEN            128
+#define SNSR_BUF_LEN            32
 
 // Type used to store and stream sensor samples
 #define SNSR_DATA_TYPE          int16_t
@@ -203,6 +203,10 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+typedef SNSR_DATA_TYPE snsr_data_t;
+typedef SNSR_DATA_TYPE snsr_dataframe_t[SNSR_NUM_AXES];
+typedef SNSR_DATA_TYPE snsr_datapacket_t[SNSR_NUM_AXES*SNSR_SAMPLES_PER_PACKET];
 
 #ifdef	__cplusplus
 }
