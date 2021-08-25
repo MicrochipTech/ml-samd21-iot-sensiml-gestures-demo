@@ -73,8 +73,9 @@
 // For ICM42688 >= 1kHz range:
 //  - set SNSR_SAMPLE_RATE_UNIT to SNSR_SAMPLE_RATE_UNIT_KHZ
 //  - set SNSR_SAMPLE_RATE to one of: 1, 2, 4, 8, 16
-// !NB! Increasing the sample rate above 200Hz with all 6 axes may cause buffer overruns
-//      - Change at your own risk!
+// !NB! Increasing the sample rate above 500Hz (this may be lower for non MDV formats)
+// with all 6 axes may cause buffer overruns
+//  - Change at your own risk!
 #define SNSR_SAMPLE_RATE        100
 #define SNSR_SAMPLE_RATE_UNIT   SNSR_SAMPLE_RATE_UNIT_HZ // HZ or KHZ
 
@@ -95,21 +96,26 @@
 #define SNSR_USE_GYRO_Y         false
 #define SNSR_USE_GYRO_Z         false
 
-// Size of sensor buffer in samples
-#define SNSR_BUF_LEN            64
+// Size of sensor buffer in samples (must be power of 2)
+#define SNSR_BUF_LEN            32
 
 // Type used to store and stream sensor samples
 #define SNSR_DATA_TYPE          int16_t
 
 // Frame header byte for MPLAB DV
-#define MDV_START_OF_FRAME     0xA5U
+#define MDV_START_OF_FRAME      0xA5U
 
 // SensiML specific parameters
 #if (DATA_STREAMER_FORMAT == DATA_STREAMER_FORMAT_SMLSS)
-#define SNSR_SAMPLES_PER_PACKET 6
+#define SML_MAX_CONFIG_STRLEN   256
+#define SNSR_SAMPLES_PER_PACKET 8  // must be factor of SNSR_BUF_LEN
+#define SSI_JSON_CONFIG_VERSION 2  // 2 => Use enhance SSI protocol,
+                                   // 1 => use original SSI protocol
+#else
+#define SNSR_SAMPLES_PER_PACKET 1
 #endif
 
-// LED tick rate parameters
+// LED tick rate periods in ms
 #define TICK_RATE_FAST          100
 #define TICK_RATE_SLOW          500
 
@@ -130,42 +136,77 @@
     #define MULTI_SENSOR 0
 #endif
 
+// The way the buffering works the following condition must be enforced
+#if (SNSR_BUF_LEN % SNSR_SAMPLES_PER_PACKET) > 0
+#error "SNSR_SAMPLES_PER_PACKET must be a factor of SNSR_BUF_LEN"
+#endif
+
 // Provide the functions needed by sensor module
 #define snsr_read_timer_us read_timer_us
 #define snsr_read_timer_ms read_timer_ms
 #define snsr_sleep_ms      sleep_ms
 #define snsr_sleep_us      sleep_us
 
-// Some convenience macros
-#define LED_BLUE_On     LED_BLUE_Clear
-#define LED_BLUE_Off    LED_BLUE_Set
-#define LED_GREEN_On    LED_GREEN_Clear
-#define LED_GREEN_Off   LED_GREEN_Set
-#define LED_RED_On      LED_RED_Clear
-#define LED_RED_Off     LED_RED_Set
-#define LED_YELLOW_On   LED_YELLOW_Clear
-#define LED_YELLOW_Off  LED_YELLOW_Set
-#define LED_ALL_On()    do { LED_YELLOW_On(); LED_GREEN_On(); LED_RED_On(); LED_BLUE_On(); } while (0)
-#define LED_ALL_Off()   do { LED_YELLOW_Off(); LED_GREEN_Off(); LED_RED_Off(); LED_BLUE_Off(); } while (0)
-
 #define STREAM_FORMAT_IS(X) (defined(DATA_STREAMER_FORMAT_ ## X) && (DATA_STREAMER_FORMAT_ ## X == DATA_STREAMER_FORMAT))
 
-#define SNSR_SAMPLE_RATE_UNIT_STR ((SNSR_SAMPLE_RATE_UNIT == SNSR_SAMPLE_RATE_UNIT_KHZ) ? "kHz" : "Hz")
 #ifdef SNSR_TYPE_BMI160
 #define SNSR_NAME "bmi160"
 #elif SNSR_TYPE_ICM42688
 #define SNSR_NAME "icm42688"
 #endif
 
-// Macros for portability
+// *****************************************************************************
+// *****************************************************************************
+// Section: Platform generic macros for portability
+// *****************************************************************************
+// *****************************************************************************
+#define __nullop__()        do {} while (0)
+#define LED_BLUE_On         LED_BLUE_Clear
+#define LED_BLUE_Off        LED_BLUE_Set
+//#define LED_BLUE_Toggle     __nullop__
+#define LED_GREEN_On        LED_GREEN_Clear
+#define LED_GREEN_Off       LED_GREEN_Set
+//#define LED_GREEN_Toggle    __nullop__
+#define LED_RED_On          LED_RED_Clear
+#define LED_RED_Off         LED_RED_Set
+//#define LED_RED_Toggle      __nullop__
+#define LED_YELLOW_On       LED_YELLOW_Clear
+#define LED_YELLOW_Off      LED_YELLOW_Set
+//#define LED_YELLOW_Toggle   __nullop__
+#define LED_ALL_On()        do { LED_YELLOW_On(); LED_GREEN_On(); LED_RED_On(); LED_BLUE_On(); } while (0)
+#define LED_ALL_Off()       do { LED_YELLOW_Off(); LED_GREEN_Off(); LED_RED_Off(); LED_BLUE_Off(); } while (0)
+#define LED_STATUS_On       LED_YELLOW_On
+#define LED_STATUS_Off      LED_YELLOW_Off
+#define LED_STATUS_Toggle   LED_YELLOW_Toggle
+
+// Map CS pin for SPI
+//#define MIKRO_CS_Clear      MIKRO_CS_Clear
+//#define MIKRO_CS_Set        MIKRO_CS_Set
+
+// UART stubs
+#define UART_RX_DATA        SERCOM5_REGS->USART_INT.SERCOM_DATA
+#define UART_IsRxReady      SERCOM5_USART_ReceiverIsReady
+#define UART_RXC_Enable()   { SERCOM5_REGS->USART_INT.SERCOM_INTENSET |= (uint8_t)(SERCOM_USART_INT_INTENSET_RXC_Msk); }
+
+// Device init / management
+//#define SYS_Initialize   SYS_Initialize
+//#define SYS_Tasks        SYS_Tasks
+
+// Sensor external interrupt
 #define MIKRO_INT_CallbackRegister(cb) EIC_CallbackRegister(EIC_PIN_12, cb, (uintptr_t) NULL)
-#define TC_TimerStart TC3_TimerStart
-#define TC_TimerGet TC3_Timer16bitCounterGet
-#define TC_TimerCallbackRegister(cb) TC3_TimerCallbackRegister(cb, (uintptr_t) NULL)
+
+// uS Timer
+#define TC_TimerStart                   TC3_TimerStart
+#define TC_TimerGet_us                  TC3_Timer16bitCounterGet
+#define TC_TimerCallbackRegister(cb)    TC3_TimerCallbackRegister(cb, (uintptr_t) NULL)
 
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+typedef SNSR_DATA_TYPE snsr_data_t;
+typedef SNSR_DATA_TYPE snsr_dataframe_t[SNSR_NUM_AXES];
+typedef SNSR_DATA_TYPE snsr_datapacket_t[SNSR_NUM_AXES*SNSR_SAMPLES_PER_PACKET];
 
 #ifdef	__cplusplus
 }
